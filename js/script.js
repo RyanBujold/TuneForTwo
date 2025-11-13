@@ -5,10 +5,10 @@ let main = {
 }
 
 let target = {
-    x: 400,
-    y: 600,
-    size: 10
+
 }
+
+let targets = []
 
 const MAXWIDTH = 1000;
 const MAXHEIGHT = 1000;
@@ -20,15 +20,35 @@ let keyState = {
     d: false
 }
 
+let sounds = []
+
 function setup() {
     createCanvas(MAXWIDTH, MAXHEIGHT);
-    shrimpFamily.play();
-    shrimpFamily.loop();
+    for (const sound of sounds)
+    {
+        targets.push({
+            x: ranInt(100, 900),
+            y: ranInt(100, 900),
+            size: 10,
+            sound: sound
+        })
+        sound.play();
+        sound.loop();
+    }
 }
+
+function ranInt(min, max)
+{
+    return Math.round(random(min, max))
+}
+
 
 let shrimpFamily = undefined;
 function preload()
 {
+    sounds.push(loadSound("./assets/audio/sound1.wav"))
+    sounds.push(loadSound("./assets/audio/sound2.wav"))
+    sounds.push(loadSound("./assets/audio/sound3.wav"))
     shrimpFamily = loadSound("./assets/audio/nocturne.mp3");
 }
 
@@ -41,27 +61,28 @@ function draw()
     fill(255, 0, 0);
     ellipse(main.x, main.y, main.size);
 
-    let color = checkTarget();
-    fill(color.r, color.g, color.b)
-    ellipse(target.x, target.y, target.size);
-
     if (keyState.w) main.y--;
     if (keyState.s) main.y++;
     if (keyState.a) main.x--;
     if (keyState.d) main.x++;
 
-    fill(255);
-    textSize(36)
-    let distX = target.x > main.x ? target.x - main.x : main.x - target.x;
-    let distY = target.y > main.y ? target.y - main.y : main.y - target.y;
-    text("DISTANCE FROM TARGET: " + distX + " x " + distY, 100, MAXHEIGHT - 100)
+    for (let target of targets)
+    {
+        let color = checkTarget();
+        fill(color.r, color.g, color.b)
+        ellipse(target.x, target.y, target.size);
 
-    let d = dist(main.x, main.y, target.x, target.y)
-    let m = map(d, 0, 300, 1.0, 0.0, true);
+        fill(255);
+        textSize(36)
     
-    text("DISTANCE FROM TARGET: " + m, 100, MAXHEIGHT - 50)
+        let d = dist(main.x, main.y, target.x, target.y)
+        let m = map(d, 0, 300, 1.0, 0.0, true);
+        target.sound.setVolume(m);
+    }
 
-    shrimpFamily.setVolume(m);
+    //text("DISTANCE FROM TARGET: " + m, 100, MAXHEIGHT - 50)
+
+    //shrimpFamily.setVolume(m);
 
 }
 function keyPressed()
