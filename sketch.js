@@ -1,8 +1,3 @@
-let ball = {
-    x: 100,
-    y: 100,
-    size: 30
-}
 
 let targets = []
 let sounds = []
@@ -10,6 +5,11 @@ let sounds = []
 const MAXWIDTH = 1000;
 const MAXHEIGHT = 1000;
 
+let ball = {
+    x: MAXWIDTH / 2,
+    y: MAXHEIGHT / 2,
+    size: 30
+}
 function setup() {
 	createCanvas(MAXWIDTH, MAXHEIGHT);
     for (const sound of sounds)
@@ -69,10 +69,10 @@ function receiveOsc(address, value) {
 	//console.log("received OSC: " + address + ", " + value);
 
 	if (address == '/test') {
-		if (ball.x <= MAXWIDTH && ball.x >= 0) ball.x += value[0] * 10;
+		if (ball.x <= MAXWIDTH && ball.x >= 0) ball.x = (value[0] * 1000 / 2) + 500;
 		else if (ball.x > MAXWIDTH) ball.x = MAXWIDTH;
 		else if (ball.x < 0) ball.x = 0;
-		if (ball.y <= MAXHEIGHT && ball.y >= 0) ball.y += value[1] * 10;
+		if (ball.y <= MAXHEIGHT && ball.y >= 0) ball.y = (value[1] * 1000 / 2) + 500;
 		else if (ball.y > MAXHEIGHT) ball.y = MAXHEIGHT;
 		else if (ball.y < 0) ball.y = 0;
 	}
