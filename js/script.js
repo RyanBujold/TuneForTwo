@@ -4,10 +4,6 @@ let main = {
     size: 30
 }
 
-let target = {
-
-}
-
 let targets = []
 
 const MAXWIDTH = 1000;
@@ -85,6 +81,7 @@ function draw()
     //shrimpFamily.setVolume(m);
 
 }
+
 function keyPressed()
 {
     if (key === "w" || key === "W") keyState.w = true;
