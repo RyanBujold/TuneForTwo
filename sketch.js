@@ -5,6 +5,9 @@ let sounds = []
 const MAXWIDTH = 1000;
 const MAXHEIGHT = 1000;
 
+let gameStart = false;
+let didGameStart = false;
+
 let ball = {
     x: MAXWIDTH / 2,
     y: MAXHEIGHT / 2,
@@ -20,10 +23,10 @@ function setup() {
             size: 10,
             sound: sound
         })
-        sound.play();
-        sound.loop();
+        //sound.play();
+        //sound.loop();
     }
-	setupOsc(9000, 5501);
+	setupOsc(9000, 5500);
 }
 
 function ranInt(min, max)
@@ -45,6 +48,15 @@ function draw() {
     fill(255, 0, 0);
     ellipse(ball.x, ball.y, ball.size);
 
+    if(gameStart && !didGameStart){
+        for (const sound of sounds) { 
+            sound.play();
+            sound.loop();
+        }
+        didGameStart = true;
+    }
+
+    text("press 'q' to start audio", 10, 100);
     //if (keyState.w) ball.y--;
     //if (keyState.s) ball.y++;
     //if (keyState.a) ball.x--;
@@ -111,4 +123,8 @@ function checkTarget(target)
     else return {r: 0, g: 255, b: 0}
     //if (overlap) target.fill = target.fills.overlap;
     //else target.fill = target.fills.noOverlap;
+}
+
+function keyPressed() {
+    if (key === 'q') { gameStart = true; console.log(gameStart); }
 }

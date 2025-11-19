@@ -18,6 +18,9 @@ let keyState = {
 
 let sounds = []
 
+let gameStart = false;
+let didGameStart = false;
+
 function setup() {
     createCanvas(MAXWIDTH, MAXHEIGHT);
     for (const sound of sounds)
@@ -28,8 +31,6 @@ function setup() {
             size: 10,
             sound: sound
         })
-        sound.play();
-        sound.loop();
     }
 }
 
@@ -56,6 +57,15 @@ function draw()
     background(0);
     fill(255, 0, 0);
     ellipse(main.x, main.y, main.size);
+
+    if(gameStart && !didGameStart){
+        for (const sound of sounds) { 
+            sound.play();
+            sound.loop();
+        }
+        didGameStart = true;
+    }
+
 
     if (keyState.w) main.y--;
     if (keyState.s) main.y++;
