@@ -69,7 +69,7 @@ function setupDistortion()
     osc.disconnect(); // Disconnect from output to process through distortion
   
     // Create a waveshaper distortion with 2x oversampling
-    distortion = new p5.Distortion(1, '4x');
+    distortion = new p5.Distortion(1, '2x');
     osc.connect(distortion);
 }
 
@@ -81,7 +81,7 @@ function ranInt(min, max)
 
 function draw()
 {
-    console.log(distortionLevel);
+    //console.log(distortionLevel);
 	text("I'm p5.js", ball.x - 25, ball.y);
     background(0);
     fill(255, 0, 0);
@@ -119,20 +119,37 @@ function draw()
 
 var distortionLevel;
 
+let volumes = [];
+
 function receiveOsc(address, value) {
 	//console.log("received OSC: " + address + ", " + value);
 
-	if (address == '/test')
+    volumes = [];
+
+	if (address == '/wek/outputs')
     {
-		if (ball.x <= MAXWIDTH && ball.x >= 0) ball.x = (value[0] * 1000 / 2) + 500;
-		else if (ball.x > MAXWIDTH) ball.x = MAXWIDTH;
-		else if (ball.x < 0) ball.x = 0;
-		if (ball.y <= MAXHEIGHT && ball.y >= 0) ball.y = (value[1] * 1000 / 2) + 500;
-		else if (ball.y > MAXHEIGHT) ball.y = MAXHEIGHT;
-		else if (ball.y < 0) ball.y = 0;
-        
-        distortionLevel = (value[2] + 1) / 2
+        for (let i = 0; i < sounds.length * 4; i += sounds.length + 1)
+        {
+            console.log(i);
+            volumes.push(value[i]);
+            // THis is where we can put our modifiers for each, theoretically go up to 11
+        }
+        distortionLevel = value[sounds.length];
+       /// console.log(value[0]);
+        //distortionLevel = value[2]
+
+
+		//if (ball.x <= MAXWIDTH && ball.x >= 0) ball.x = (value[0] * 1000 / 2) + 500;
+		//else if (ball.x > MAXWIDTH) ball.x = MAXWIDTH;
+		//else if (ball.x < 0) ball.x = 0;
+		//if (ball.y <= MAXHEIGHT && ball.y >= 0) ball.y = (value[1] * 1000 / 2) + 500;
+		//else if (ball.y > MAXHEIGHT) ball.y = MAXHEIGHT;
+		//else if (ball.y < 0) ball.y = 0;
+        //
+        //distortionLevel = (value[2] + 1) / 2
         // value[2] and value[3] are the second joystick. We can set the distortion for that
+
+        console.log(volumes)
 	}
 }
 
@@ -174,3 +191,8 @@ function keyPressed() {
 }
 
 //env.triggerRelease();
+
+function roundToNDecimals(number, decimals) {
+    const factor = Math.pow(10, decimals);
+    return Math.round(number * factor) / factor;
+}
