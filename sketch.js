@@ -17,6 +17,10 @@ let ball = {
 let noise;
 let sinOsc;
 
+var distortionLevel;
+
+let volumes = [];
+
 
 var env; // this is the env
 var osc; // this oscillator that will be effected by the distortion
@@ -24,15 +28,17 @@ var distortion; // this is the waveshaper distortion effect
 
 var fft;
 
+var bitcrusher = require('bitcrusher')
+
 function generateSounds(num)
 {
     sounds.push(loadSound("./assets/audio/sound" + (num + 1) + ".wav"))
-    distorts.push(new p5.Distortion(1, '2x'));
+    distorts.push(new p5.Distortion(0, '2x'));
     distorts[num].process(sounds[num]);
 }
 function preload()
 {
-    for (let i = 0; i < 3; i++)
+    for (let i = 0; i < 1; i++)
         generateSounds(i);
 }
 
@@ -75,9 +81,10 @@ function setupDistortion()
 
 function ranInt(min, max)
 {
-    return Math.round(random(min, max))
+    return Math.round(random(350, 350))
 }
 
+var bitcrushNode;
 
 function draw()
 {
@@ -91,6 +98,10 @@ function draw()
     {
         for (const sound of sounds)
         {
+            bitcrushNode = bitcrush(sound, {
+                bitDepth: 6,
+                frequency: 0.5
+            })
             sound.play();
             sound.loop();
         }
@@ -117,10 +128,6 @@ function draw()
     }
 }
 
-var distortionLevel;
-
-let volumes = [];
-
 function receiveOsc(address, value) {
 	//console.log("received OSC: " + address + ", " + value);
 
@@ -130,11 +137,11 @@ function receiveOsc(address, value) {
     {
         for (let i = 0; i < sounds.length * 4; i += sounds.length + 1)
         {
-            console.log(i);
             volumes.push(value[i]);
             // THis is where we can put our modifiers for each, theoretically go up to 11
         }
-        distortionLevel = value[sounds.length];
+        //distortionLevel = value[sounds.length];
+        distortionLevel = 0;
        /// console.log(value[0]);
         //distortionLevel = value[2]
 
@@ -149,7 +156,7 @@ function receiveOsc(address, value) {
         //distortionLevel = (value[2] + 1) / 2
         // value[2] and value[3] are the second joystick. We can set the distortion for that
 
-        console.log(volumes)
+        //console.log(volumes)
 	}
 }
 
