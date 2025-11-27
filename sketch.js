@@ -23,7 +23,7 @@ function setup() {
         sound.play();
         sound.loop();
     }
-	setupOsc(9000, 5501);
+	setupOsc(9000, 5500);
 }
 
 function ranInt(min, max)
@@ -36,6 +36,7 @@ function preload()
     sounds.push(loadSound("./assets/audio/sound1.wav"))
     sounds.push(loadSound("./assets/audio/sound2.wav"))
     sounds.push(loadSound("./assets/audio/sound3.wav"))
+    sounds.push(loadSound("./assets/audio/shrimp.mp3"))
     shrimpFamily = loadSound("./assets/audio/nocturne.mp3");
 }
 
