@@ -8,14 +8,21 @@ let didGameStart = false;
 
 function generateSounds(num)
 {
-    sounds.push(loadSound("./assets/audio/sound" + (num + 1) + ".wav"))
+    sounds.push(loadSound("./assets/audio/songs/" + (num + 1) + ".mp3"))
     distorts.push(new p5.Distortion(0, '2x'));
     distorts[num].process(sounds[num]);
 }
+
+let gif = [];
+let frameCount = 0;
+let gifFrames = [];
 function preload()
 {
     for (let i = 0; i < 3; i++)
         generateSounds(i);
+
+    for (let i = 0; i < 4; i++)
+        gif.push(loadImage(`./assets/miyamoto/${i + 1}.png`))
 }
 
 function setup()
@@ -37,10 +44,23 @@ function setup()
 	setupOsc(9000, 5500);
 }
 
+let j = 0;
+
+let highestV = 0;
+let highestD = 0;
 function draw()
 {
     background(0);
+	createCanvas(windowWidth, windowHeight);
 
+    push();
+    scale(4);
+    console.log(frameCount);
+    image(gif[Math.round(j) % 4], 0, 0);
+
+    //image(gif, 0, 0) 
+    //epic.position(50, 350);   
+    pop();
     if(gameStart && !didGameStart)
     {
         for (const sound of sounds)
@@ -53,13 +73,20 @@ function draw()
 
     fill(255);
     textSize(36);
-    text("press 'q' to start audio", windowWidth / 2, windowHeight / 2);
+    text("press 'q' to start audio", windowWidth / 2, windowHeight / 4);
 
+    highestV = 0;
+    highestD = 0;
     for (let target of targets)
     {
         target.distort.set(target.distortionLevel);
-        target.sound.setVolume(target.volume);
+        target.sound.setVolume((target.volume));
+        if (target.volume / 2 > highestV) highestV = target.volume / 2;
+        if (target.distortionLevel / 2 > highestD) highestD = target.distortionLevel / 2;
     }
+    j += highestV + highestD;
+
+    if (j >= 4) j = 0;
 }
 
 function receiveOsc(address, value)
