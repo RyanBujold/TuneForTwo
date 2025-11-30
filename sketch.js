@@ -1,24 +1,33 @@
-
 let targets = []
 let sounds = []
 let distorts = []
+
+const numSongs = 3;
 
 let gameStart = false;
 let didGameStart = false;
 
 function generateSounds(num)
 {
-    sounds.push(loadSound("./assets/audio/songs/" + (num + 1) + ".mp3"))
-    distorts.push(new p5.Distortion(0, '2x'));
-    distorts[num].process(sounds[num]);
+    //sounds.push(loadSound("./assets/audio/songs/" + (num + 1) + ".mp3"))
+    const player = new Tone.Player({
+        "url": "./assets/audio/songs/" + (num + 1) + ".mp3",
+        "loop": true,
+    }).toDestination();
+    sounds.push( player );
+    //distorts.push(new p5.Distortion(0, '2x'));
+    //const distortion = new Tone.Distortion(0.4);
+
+    //distorts[num].process(sounds[num]);
 }
 
 let gif = [];
 let frameCount = 0;
 let gifFrames = [];
+
 function preload()
 {
-    for (let i = 0; i < 3; i++)
+    for (let i = 0; i < numSongs; i++)
         generateSounds(i);
 
     for (let i = 0; i < 4; i++)
@@ -34,10 +43,10 @@ function setup()
             x: 350,
             y: 350,
             size: 10,
-            distort: distorts[i],
+            //distort: distorts[i],
             sound: sounds[i],
             volume: 0,
-            distortionLevel: 0
+            //distortionLevel: 0
         })
     }
 
@@ -53,6 +62,12 @@ function draw()
     background(0);
 	createCanvas(windowWidth, windowHeight);
 
+    // Get button press to start Tone.js
+    document.querySelector("button").addEventListener("click", async () => {
+	    await Tone.start();
+	    console.log("context started");
+    });
+
     push();
     scale(4);
     console.log(frameCount);
@@ -65,8 +80,10 @@ function draw()
     {
         for (const sound of sounds)
         {
-            sound.play();
-            sound.loop();
+            //console.log(sound);
+            sound.start();
+            //sound.play();
+            //sound.loop();
         }
         didGameStart = true;
     }
@@ -79,10 +96,10 @@ function draw()
     highestD = 0;
     for (let target of targets)
     {
-        target.distort.set(target.distortionLevel);
-        target.sound.setVolume((target.volume));
-        if (target.volume / 2 > highestV) highestV = target.volume / 2;
-        if (target.distortionLevel / 2 > highestD) highestD = target.distortionLevel / 2;
+        //target.distort.set(target.distortionLevel);
+        //target.sound.setVolume((target.volume));
+        //if (target.volume / 2 > highestV) highestV = target.volume / 2;
+        //if (target.distortionLevel / 2 > highestD) highestD = target.distortionLevel / 2;
     }
     j += highestV + highestD;
 
@@ -96,8 +113,8 @@ function receiveOsc(address, value)
     {
         for (let i = 0; i < targets.length; i++)
         {
-            targets[i].volume = value[i];
-            targets[i].distortionLevel = value[i + 3];
+            //targets[i].volume = value[i];
+            //targets[i].distortionLevel = value[i + numSongs];
         }
 	}
 }
@@ -124,5 +141,5 @@ function setupOsc(oscPortIn, oscPortOut)
 
 function keyPressed()
 {
-    if (key === 'q') { gameStart = true; console.log(gameStart); }
+    if (key === 'q') { gameStart = true; Tone.start(); }
 }

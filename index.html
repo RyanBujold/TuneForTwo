@@ -5,17 +5,22 @@
 	  <meta name="viewport" width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0>
   
 	  <title>Tune For Two</title>
+
+	<script src="./node_modules/tone/build/Tone.js"></script>
+	<script src="./node_modules/node-web-audio-api/index.mjs"></script>
+
+
 	<script src="http://127.0.0.1:8081/socket.io/socket.io.js"></script>
   	<script language="javascript" type="text/javascript" src="js/libraries/p5.min.js"></script>
   	<script language="javascript" type="text/javascript" src="js/libraries/p5.sound.min.js"></script>
+	  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.play/1.5.3/p5.play.min.js"></script> -->
 
-	  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.play/1.5.3/p5.play.min.js"></script>
-	
-  	<script language="javascript" type="text/javascript" src="sketch.js"></script>
+  	<script language="javascript" src="sketch.js"></script>
   	<style> body {padding: 0; margin: 0;} </style>
 </head>
 
 <body>
+	<button id="button">Play</button>
 </body>
 
 </html>
