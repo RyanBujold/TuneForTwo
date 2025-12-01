@@ -2,15 +2,37 @@
 let targets = []
 let sounds = []
 let distorts = []
+let reverbs = []
+//let panners = []
+
+//let filters = []
+
+// 'panner' and 'filter' stuff likely doesn't work because of audio context listeners (node.js doesn't work with that)
 
 let gameStart = false;
 let didGameStart = false;
 
+let numSongs = 3;
+
+let miyamotoMode = false;
+
 function generateSounds(num)
 {
+    //Setup distortions
     sounds.push(loadSound("./assets/audio/songs/" + (num + 1) + ".mp3"))
-    distorts.push(new p5.Distortion(0, '2x'));
+    distorts.push(new p5.Distortion(0, 'none'));
     distorts[num].process(sounds[num]);
+    reverbs.push(new p5.Reverb());
+    reverbs[num].process(sounds[num],3,2);
+    //panners.push(new p5.Panner3D());
+    //panners[num].process(sounds[num]);
+
+    //Setup filters
+    // const filter = new p5.LowPass();
+    // filter.set(10);
+    // filters.push(filter);
+    // filters[num].disconnect();
+    // filters[num].connect(sounds[num]);
 }
 
 let gif = [];
@@ -18,7 +40,7 @@ let frameCount = 0;
 let gifFrames = [];
 function preload()
 {
-    for (let i = 0; i < 3; i++)
+    for (let i = 0; i < numSongs; i++)
         generateSounds(i);
 
     for (let i = 0; i < 4; i++)
@@ -36,8 +58,12 @@ function setup()
             size: 10,
             distort: distorts[i],
             sound: sounds[i],
+            reverb: reverbs[i],
+            //panner: panners[i],
             volume: 0,
-            distortionLevel: 0
+            distortionLevel: 0,
+            reverbLevel: 0,
+            //pannerLevel: 0,
         })
     }
 
@@ -53,14 +79,17 @@ function draw()
     background(0);
 	createCanvas(windowWidth, windowHeight);
 
-    push();
-    scale(4);
-    console.log(frameCount);
-    image(gif[Math.round(j) % 4], 0, 0);
+    if(miyamotoMode){
+        push();
+        scale(4);
+        console.log(frameCount);
+        image(gif[Math.round(j) % 4], 0, 0);
 
-    //image(gif, 0, 0) 
-    //epic.position(50, 350);   
-    pop();
+        //image(gif, 0, 0) 
+        //epic.position(50, 350);   
+        pop();
+    }
+    
     if(gameStart && !didGameStart)
     {
         for (const sound of sounds)
@@ -73,6 +102,7 @@ function draw()
 
     fill(255);
     textSize(36);
+    fill('limegreen');
     text("press 'q' to start audio", windowWidth / 2, windowHeight / 4);
 
     highestV = 0;
@@ -81,6 +111,7 @@ function draw()
     {
         target.distort.set(target.distortionLevel);
         target.sound.setVolume((target.volume));
+        target.reverb.amp(target.reverbLevel*10);
         if (target.volume / 2 > highestV) highestV = target.volume / 2;
         if (target.distortionLevel / 2 > highestD) highestD = target.distortionLevel / 2;
     }
@@ -97,7 +128,9 @@ function receiveOsc(address, value)
         for (let i = 0; i < targets.length; i++)
         {
             targets[i].volume = value[i];
-            targets[i].distortionLevel = value[i + 3];
+            targets[i].distortionLevel = value[i + numSongs];
+            targets[i].reverbLevel = value[i + numSongs*2];
+            //targets[i].pannerLevel = value[i + numSongs*3];
         }
 	}
 }
