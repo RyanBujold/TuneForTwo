@@ -25,11 +25,14 @@ function generateSounds(num)
     reverbs[num].process(sounds[num],3,2);
 
     //Setup filters
-    // const filter = new p5.LowPass();
-    // filter.set(10);
+    // let context = getAudioContext();
+    // let filter = context.createBiquadFilter();
+    // filter.type = 'lowpass';
+    // filter.frequency.setTargetAtTime(2000, context.currentTime, 0);
     // filters.push(filter);
-    // filters[num].disconnect();
-    // filters[num].connect(sounds[num]);
+    // sounds[num].connect(filter);
+    // filters[num].connect(context.destination);
+
 }
 
 let gif = [];
@@ -85,6 +88,12 @@ function draw()
         //epic.position(50, 350);   
         pop();
     }
+
+    fill(255);
+    textSize(56);
+    textAlign(CENTER);
+    fill(0);
+    text("Tune For Two", windowWidth / 2, windowHeight / 6);
     
     if(gameStart && !didGameStart)
     {
