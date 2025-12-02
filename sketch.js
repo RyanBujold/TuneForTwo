@@ -11,7 +11,7 @@ let reverbs = []
 let gameStart = false;
 let didGameStart = false;
 
-let numSongs = 3;
+let numSongs = 4;
 
 let miyamotoMode = false;
 
@@ -94,13 +94,32 @@ function draw()
             sound.play();
             sound.loop();
         }
+
         didGameStart = true;
     }
+    else if(!gameStart && didGameStart){
+        for (const sound of sounds)
+        {
+            sound.stop();
+        }
+        didGameStart = false
+    }
 
-    fill(255);
-    textSize(36);
-    fill('limegreen');
-    text("press 'q' to start audio", windowWidth / 2, windowHeight / 4);
+    if(gameStart) {
+        drawSounds();
+        fill(255);
+        textSize(36);
+        textAlign(CENTER);
+        fill(0);
+        text("press 'q' to stop audio", windowWidth / 2, windowHeight / 4);
+    }
+    else {
+        fill(255);
+        textSize(36);
+        textAlign(CENTER);
+        fill(0);
+        text("press 'q' to start audio", windowWidth / 2, windowHeight / 4);
+    }
 
     highestV = 0;
     highestD = 0;
@@ -157,5 +176,39 @@ function setupOsc(oscPortIn, oscPortOut)
 
 function keyPressed()
 {
-    if (key === 'q') { gameStart = true; console.log(gameStart); }
+    if (key === 'q') { gameStart = !gameStart;  }
+}
+
+function drawSounds(){
+    let offsetX = windowWidth/4;
+    let offsetY = windowHeight/2;
+    let lastLineX = 0;
+    let lastLineY = windowHeight/2;
+    let middleLineX;
+    let middleLineY;
+    for (let i = 0; i < targets.length; i++)
+        {
+            push();
+            fill(255,0,0);
+            stroke(0);
+
+            middleLineX = offsetX + targets[i].volume * 100;
+            middleLineY = offsetY + targets[i].distortionLevel * 100;
+            line(lastLineX, lastLineY, middleLineX, middleLineY);
+
+            offsetX += 100;
+            lastLineX = middleLineX;
+            lastLineY = middleLineY;
+            middleLineX = offsetX + targets[i].reverbLevel * 100;
+            middleLineY = offsetY + targets[i].pannerLevel * 100;
+            line(lastLineX, lastLineY, middleLineX, middleLineY);
+
+            offsetX += 100;
+            lastLineX = middleLineX;
+            lastLineY = middleLineY;
+
+            //ellipse(targets[i].volume * 100, targets[i].distortionLevel * 100, targets[i].reverbLevel * 100, targets[i].pannerLevel * 100);
+            pop();
+        }
+    line(lastLineX,lastLineY,windowWidth,windowHeight/2)
 }
