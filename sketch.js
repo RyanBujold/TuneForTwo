@@ -1,8 +1,9 @@
 
 let targets = []
 let sounds = []
-let distorts = []
+//let distorts = []
 let reverbs = []
+let noise;
 
 //let filters = []
 
@@ -19,11 +20,12 @@ function generateSounds(num)
 {
     //Setup distortions
     sounds.push(loadSound("./assets/audio/songs/" + (num + 1) + ".mp3"))
-    distorts.push(new p5.Distortion(0, 'none'));
-    distorts[num].process(sounds[num]);
+    //distorts.push(new p5.Distortion(0, 'none'));
+    //distorts[num].process(sounds[num]);
     reverbs.push(new p5.Reverb());
     reverbs[num].process(sounds[num],3,2);
 
+    noise = new p5.Noise();
     //Setup filters
     // let context = getAudioContext();
     // let filter = context.createBiquadFilter();
@@ -32,7 +34,6 @@ function generateSounds(num)
     // filters.push(filter);
     // sounds[num].connect(filter);
     // filters[num].connect(context.destination);
-
 }
 
 let gif = [];
@@ -50,17 +51,17 @@ function preload()
 function setup()
 {
 	createCanvas(windowWidth, windowHeight);
-    for (let i = 0; i < distorts.length; i++)
+    for (let i = 0; i < sounds.length; i++)
     {
         targets.push({
             x: 350,
             y: 350,
             size: 10,
-            distort: distorts[i],
+            //distort: distorts[i],
             sound: sounds[i],
             reverb: reverbs[i],
             volume: 0,
-            distortionLevel: 0,
+            //distortionLevel: 0,
             reverbLevel: 0,
             pannerLevel: 0,
         })
@@ -102,6 +103,7 @@ function draw()
             sound.pan(1);
             sound.play();
             sound.loop();
+            noise.start();
         }
 
         didGameStart = true;
@@ -110,6 +112,7 @@ function draw()
         for (const sound of sounds)
         {
             sound.stop();
+            noise.stop();
         }
         didGameStart = false
     }
@@ -135,11 +138,11 @@ function draw()
     for (let target of targets)
     {
         
-        target.distort.set(target.distortionLevel);
+        //target.distort.set(target.distortionLevel);
         target.sound.setVolume((target.volume));
         target.reverb.amp(target.reverbLevel*10);
         if (target.volume / 2 > highestV) highestV = target.volume / 2;
-        if (target.distortionLevel / 2 > highestD) highestD = target.distortionLevel / 2;
+        //if (target.distortionLevel / 2 > highestD) highestD = target.distortionLevel / 2;
 
         target.sound.pan(target.pannerLevel);
     }
@@ -156,10 +159,11 @@ function receiveOsc(address, value)
         for (let i = 0; i < targets.length; i++)
         {
             targets[i].volume = value[i];
-            targets[i].distortionLevel = value[i + numSongs];
+            //targets[i].distortionLevel = value[i + numSongs];
             targets[i].reverbLevel = value[i + numSongs * 2];
             targets[i].pannerLevel = (value[i + numSongs * 3] * 2) - 1;
         }
+        noise.amp(value[value.length-1],0.5);
 	}
 }
 
@@ -202,7 +206,7 @@ function drawSounds(){
             stroke(0);
 
             middleLineX = offsetX + targets[i].volume * 100;
-            middleLineY = offsetY + targets[i].distortionLevel * 100;
+            middleLineY = offsetY + targets[i].volume * 100;
             line(lastLineX, lastLineY, middleLineX, middleLineY);
 
             offsetX += 100;
@@ -219,5 +223,5 @@ function drawSounds(){
             //ellipse(targets[i].volume * 100, targets[i].distortionLevel * 100, targets[i].reverbLevel * 100, targets[i].pannerLevel * 100);
             pop();
         }
-    line(lastLineX,lastLineY,windowWidth,windowHeight/2)
+    line(lastLineX,lastLineY,windowWidth,windowHeight/2);
 }
