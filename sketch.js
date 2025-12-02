@@ -3,7 +3,6 @@ let targets = []
 let sounds = []
 let distorts = []
 let reverbs = []
-//let panners = []
 
 //let filters = []
 
@@ -24,8 +23,6 @@ function generateSounds(num)
     distorts[num].process(sounds[num]);
     reverbs.push(new p5.Reverb());
     reverbs[num].process(sounds[num],3,2);
-    //panners.push(new p5.Panner3D());
-    //panners[num].process(sounds[num]);
 
     //Setup filters
     // const filter = new p5.LowPass();
@@ -59,11 +56,10 @@ function setup()
             distort: distorts[i],
             sound: sounds[i],
             reverb: reverbs[i],
-            //panner: panners[i],
             volume: 0,
             distortionLevel: 0,
             reverbLevel: 0,
-            //pannerLevel: 0,
+            pannerLevel: 0,
         })
     }
 
@@ -94,6 +90,7 @@ function draw()
     {
         for (const sound of sounds)
         {
+            sound.pan(1);
             sound.play();
             sound.loop();
         }
@@ -109,11 +106,14 @@ function draw()
     highestD = 0;
     for (let target of targets)
     {
+        
         target.distort.set(target.distortionLevel);
         target.sound.setVolume((target.volume));
         target.reverb.amp(target.reverbLevel*10);
         if (target.volume / 2 > highestV) highestV = target.volume / 2;
         if (target.distortionLevel / 2 > highestD) highestD = target.distortionLevel / 2;
+
+        target.sound.pan(target.pannerLevel);
     }
     j += highestV + highestD;
 
@@ -129,8 +129,8 @@ function receiveOsc(address, value)
         {
             targets[i].volume = value[i];
             targets[i].distortionLevel = value[i + numSongs];
-            targets[i].reverbLevel = value[i + numSongs*2];
-            //targets[i].pannerLevel = value[i + numSongs*3];
+            targets[i].reverbLevel = value[i + numSongs * 2];
+            targets[i].pannerLevel = (value[i + numSongs * 3] * 2) - 1;
         }
 	}
 }
