@@ -143,7 +143,7 @@ function draw()
         target.reverb.amp(target.reverbLevel*10);
         if (target.volume / 2 > highestV) highestV = target.volume / 2;
         //if (target.distortionLevel / 2 > highestD) highestD = target.distortionLevel / 2;
-
+        
         target.sound.pan(target.pannerLevel);
     }
     j += highestV + highestD;
@@ -160,8 +160,8 @@ function receiveOsc(address, value)
         {
             targets[i].volume = value[i];
             //targets[i].distortionLevel = value[i + numSongs];
-            targets[i].reverbLevel = value[i + numSongs * 2];
-            targets[i].pannerLevel = (value[i + numSongs * 3] * 2) - 1;
+            targets[i].reverbLevel = value[i + numSongs];
+            targets[i].pannerLevel = (value[i + numSongs * 2] * 2) - 1;
         }
         noise.amp(value[value.length-1],0.5);
 	}
@@ -185,6 +185,7 @@ function setupOsc(oscPortIn, oscPortOut)
 				receiveOsc(msg[i][0], msg[i].splice(1));
         else receiveOsc(msg[0], msg.splice(1));
 	});
+    
 }
 
 function keyPressed()
